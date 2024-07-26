@@ -176,12 +176,28 @@ impl WiredUnblindedSigData {
         e_arr.copy_from_slice(&self.0[0..32]);
         s_arr.copy_from_slice(&self.0[32..64]);
         r_arr.copy_from_slice(&self.0[64..96]);
+        println!("Debug: e_arr: {:?}", e_arr);
+        println!("Debug: s_arr: {:?}", s_arr);
+        println!("Debug: r_arr: {:?}", r_arr);
+        let e = Scalar::from_canonical_bytes(e_arr);
+        let s = Scalar::from_canonical_bytes(s_arr);
+        let r = CompressedRistretto(r_arr).decompress();
+        if e.is_some().unwrap_u8() == 0 {
+            println!("Debug: Failed to convert e to Scalar");
+            return Err(WiredScalarMalformed);
+        }
+        if s.is_some().unwrap_u8() == 0 {
+            println!("Debug: Failed to convert s to Scalar");
+            return Err(WiredScalarMalformed);
+        }
+        if r.is_none() {
+            println!("Debug: Failed to decompress r");
+            return Err(WiredRistrettoPointMalformed);
+        }
         Ok(UnblindedSigData {
-            e: Scalar::from_canonical_bytes(e_arr).unwrap_or_else(|| panic!("{}", WiredScalarMalformed)),
-            s: Scalar::from_canonical_bytes(s_arr).unwrap_or_else(|| panic!("{}", WiredScalarMalformed)),
-            r: CompressedRistretto(r_arr)
-                .decompress()
-                .ok_or(WiredRistrettoPointMalformed)?,
+            e: e.unwrap(),
+            s: s.unwrap(),
+            r: r.unwrap(),
         })
     }
 
