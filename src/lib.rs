@@ -19,20 +19,6 @@ pub mod request;
 pub mod session;
 pub mod signature;
 
-/// The Result type used
-pub type Result<T> = std::result::Result<T, Error>;
-
-// Re-export Error and Result for use in other modules
-pub use self::Error;
-
-/// Initialize the logger for the blindsign library.
-/// This function should be called at the start of the main program using this library.
-pub fn init_logger() {
-    env_logger::Builder::new()
-        .filter_level(LevelFilter::Debug)
-        .init();
-}
-
 /// The Error types
 #[derive(Error, Debug)]
 pub enum Error {
@@ -42,6 +28,17 @@ pub enum Error {
     WiredScalarMalformed,
     #[error("failed to convert wired ristretto point to ristretto point")]
     WiredRistrettoPointMalformed,
+}
+
+/// The Result type used
+pub type Result<T> = std::result::Result<T, Error>;
+
+/// Initialize the logger for the blindsign library.
+/// This function should be called at the start of the main program using this library.
+pub fn init_logger() {
+    env_logger::Builder::new()
+        .filter_level(LevelFilter::Debug)
+        .init();
 }
 
 impl From<rand::Error> for Error {

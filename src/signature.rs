@@ -168,7 +168,7 @@ impl WiredUnblindedSigData {
     ///
     /// * Err(::Error) on failure, which could be due to any component of the
     /// internal [u8; 96] being malformed.
-    pub fn to_internal_format(&self) -> Result<UnblindedSigData> {
+    pub fn to_internal_format(&self) -> crate::Result<UnblindedSigData> {
         let mut e_arr = [0; 32];
         let mut s_arr = [0; 32];
         let mut r_arr = [0; 32];
