@@ -23,6 +23,9 @@ extern crate subtle;
 extern crate failure_derive;
 
 // The public interface
+#[macro_use]
+extern crate log;
+
 pub mod keypair;
 pub mod blinder;
 pub mod signer;
