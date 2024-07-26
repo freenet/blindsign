@@ -19,7 +19,6 @@ extern crate typenum;
 extern crate subtle;
 
 // Imported crates with used macros
-extern crate failure;
 #[macro_use]
 extern crate failure_derive;
 extern crate log;
