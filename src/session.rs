@@ -10,6 +10,7 @@ use rand::rngs::OsRng;
 use rand::RngCore;
 use std::convert::TryFrom;
 use Error::WiredScalarMalformed;
+use log::{debug, error};
 
 /// For managing the signer side response to incoming requests for blind
 /// signatures. How the actual requests come in is orthogonal to this crate.
@@ -68,8 +69,15 @@ impl BlindSession {
     /// * e' = requester calculated e' value, received by signer
     /// * k  = randomly generated number by the signer
     pub fn sign_ep(self, ep: &[u8; 32], xs: Scalar) -> ::Result<[u8; 32]> {
-        let ep_scalar = Scalar::from_canonical_bytes(*ep)
-            .unwrap_or_else(|| panic!("{}", WiredScalarMalformed));
+        debug!("Attempting to convert ep to Scalar: {:?}", ep);
+        let ep_scalar = match Scalar::from_canonical_bytes(*ep) {
+            Some(scalar) => scalar,
+            None => {
+                error!("Failed to convert ep to Scalar: {:?}", ep);
+                return Err(WiredScalarMalformed);
+            }
+        };
+        debug!("Successfully converted ep to Scalar");
         Ok((xs * ep_scalar + self.k).to_bytes())
     }
 }
