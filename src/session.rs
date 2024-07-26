@@ -68,9 +68,8 @@ impl BlindSession {
     /// * e' = requester calculated e' value, received by signer
     /// * k  = randomly generated number by the signer
     pub fn sign_ep(self, ep: &[u8; 32], xs: Scalar) -> ::Result<[u8; 32]> {
-        Ok(
-            (xs * Scalar::from_canonical_bytes(*ep).unwrap_or_else(|| panic!("{}", WiredScalarMalformed)) + self.k)
-                .to_bytes(),
-        )
+        let ep_scalar = Scalar::from_canonical_bytes(*ep)
+            .ok_or(WiredScalarMalformed)?;
+        Ok((xs * ep_scalar + self.k).to_bytes())
     }
 }
