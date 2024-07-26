@@ -24,8 +24,8 @@ extern crate failure_derive;
 
 // The public interface
 pub mod keypair;
-pub mod request;
-pub mod session;
+pub mod blinder;
+pub mod signer;
 pub mod signature;
 
 /// The Result type used
