@@ -69,17 +69,14 @@ impl BlindSession {
     /// * k  = randomly generated number by the signer
     pub fn sign_ep(self, ep: &[u8; 32], xs: Scalar) -> ::Result<[u8; 32]> {
         println!("Debug: ep bytes: {:?}", ep);
-        let ep_scalar = match Scalar::from_canonical_bytes(*ep) {
-            Some(scalar) => {
-                println!("Debug: Successfully converted ep to Scalar");
-                scalar
-            },
-            None => {
-                println!("Debug: Failed to convert ep to Scalar");
-                println!("Debug: Last byte of ep: {}", ep[31]);
-                return Err(WiredScalarMalformed);
-            }
-        };
-        Ok((xs * ep_scalar + self.k).to_bytes())
+        let ep_scalar = Scalar::from_canonical_bytes(*ep);
+        if ep_scalar.is_some().unwrap_u8() == 1 {
+            println!("Debug: Successfully converted ep to Scalar");
+        } else {
+            println!("Debug: Failed to convert ep to Scalar");
+            println!("Debug: Last byte of ep: {}", ep[31]);
+            return Err(WiredScalarMalformed);
+        }
+        Ok((xs * ep_scalar.unwrap() + self.k).to_bytes())
     }
 }

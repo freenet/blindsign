@@ -17,7 +17,6 @@ extern crate failure;
 extern crate rand;
 extern crate typenum;
 extern crate subtle;
-extern crate log;
 
 // Imported crates with used macros
 #[macro_use]

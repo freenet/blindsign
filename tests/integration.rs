@@ -12,8 +12,7 @@ mod integration_test {
         keypair::BlindKeypair,
         request::BlindRequest,
         session::BlindSession,
-        signature::{UnblindedSigData, WiredUnblindedSigData},
-        Error, Result,
+        signature::WiredUnblindedSigData,
     };
 
     #[test]
