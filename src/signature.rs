@@ -8,7 +8,6 @@ use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 use subtle::ConstantTimeEq;
 use typenum::U64;
 use digest::Digest;
-use crate::client;
 
 /// The data required for authenticating the unblinded signature,
 ///
@@ -118,7 +117,7 @@ impl UnblindedSigData {
         H: Digest<OutputSize = U64> + Default,
         M: AsRef<[u8]>,
     {
-        let e = request::generate_e::<H>(self.r, msg.as_ref());
+        let e = client::generate_e::<H>(self.r, msg.as_ref());
         self.s * RISTRETTO_BASEPOINT_POINT == e * pub_key + self.r
     }
 
