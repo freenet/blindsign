@@ -11,7 +11,6 @@ use curve25519_dalek::{
     scalar::Scalar,
 };
 use digest::Digest;
-use rand::rngs::OsRng;
 use std::convert::TryInto;
 use signature::UnblindedSigData;
 use typenum::U64;
