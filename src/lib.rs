@@ -40,7 +40,7 @@ pub enum Error {
     #[fail(display = "failed to initialize the RNG")]
     RngInitFailed,
     #[fail(display = "failed to convert wired scalar to scalar")]
-    WiredScalarMalformed,
+    ScalarAsBytesMalformed,
     #[fail(display = "failed to convert wired ristretto point to ristretto point")]
     WiredRistrettoPointMalformed,
 }

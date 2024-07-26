@@ -4,12 +4,12 @@ use curve25519_dalek::{
     ristretto::{CompressedRistretto, RistrettoPoint},
     scalar::Scalar,
 };
-use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
+use Error::{WiredRistrettoPointMalformed, ScalarAsBytesMalformed};
 extern crate subtle;
 use subtle::ConstantTimeEq;
 use typenum::U64;
 use digest::Digest;
-use request;
+use blinder::generate_e;
 
 /// The data required for authenticating the unblinded signature,
 ///
@@ -119,7 +119,7 @@ impl UnblindedSigData {
         H: Digest<OutputSize = U64> + Default,
         M: AsRef<[u8]>,
     {
-        let e = request::generate_e::<H>(self.r, msg.as_ref());
+        let e = generate_e::<H>(self.r, msg.as_ref());
         self.s * RISTRETTO_BASEPOINT_POINT == e * pub_key + self.r
     }
 
@@ -137,7 +137,7 @@ impl UnblindedSigData {
         H: Digest<OutputSize = U64> + Default,
         M: AsRef<[u8]>,
     {
-        let e = request::generate_e::<H>(self.r, msg.as_ref());
+        let e = generate_e::<H>(self.r, msg.as_ref());
         ConstantTimeEq::ct_eq(&(self.s * RISTRETTO_BASEPOINT_POINT), &(e * pub_key + self.r))
             .unwrap_u8() == 1
     }
@@ -176,22 +176,22 @@ impl WiredUnblindedSigData {
         e_arr.copy_from_slice(&self.0[0..32]);
         s_arr.copy_from_slice(&self.0[32..64]);
         r_arr.copy_from_slice(&self.0[64..96]);
-        println!("Debug: e_arr: {:?}", e_arr);
-        println!("Debug: s_arr: {:?}", s_arr);
-        println!("Debug: r_arr: {:?}", r_arr);
+        debug!("Debug: e_arr: {:?}", e_arr);
+        debug!("Debug: s_arr: {:?}", s_arr);
+        debug!("Debug: r_arr: {:?}", r_arr);
         let e = Scalar::from_canonical_bytes(e_arr);
         let s = Scalar::from_canonical_bytes(s_arr);
         let r = CompressedRistretto(r_arr).decompress();
         if e.is_some().unwrap_u8() == 0 {
-            println!("Debug: Failed to convert e to Scalar");
-            return Err(WiredScalarMalformed);
+            debug!("Debug: Failed to convert e to Scalar");
+            return Err(ScalarAsBytesMalformed);
         }
         if s.is_some().unwrap_u8() == 0 {
-            println!("Debug: Failed to convert s to Scalar");
-            return Err(WiredScalarMalformed);
+            debug!("Debug: Failed to convert s to Scalar");
+            return Err(ScalarAsBytesMalformed);
         }
         if r.is_none() {
-            println!("Debug: Failed to decompress r");
+            debug!("Debug: Failed to decompress r");
             return Err(WiredRistrettoPointMalformed);
         }
         Ok(UnblindedSigData {

@@ -5,7 +5,7 @@ use curve25519_dalek::{
     scalar::Scalar,
 };
 use rand;
-use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
+use Error::{WiredRistrettoPointMalformed, ScalarAsBytesMalformed};
 
 /// An elliptic curve cryptography keypair. The private key (Xs) is used by the
 /// signer for creating the blind signature on the blinded hash(msg||R), and the
@@ -55,7 +55,7 @@ impl BlindKeypair {
         let private = if Scalar::from_canonical_bytes(private).is_some().unwrap_u8() == 1 {
             Scalar::from_canonical_bytes(private).unwrap()
         } else {
-            return Err(WiredScalarMalformed);
+            return Err(ScalarAsBytesMalformed);
         };
         let public = CompressedRistretto(public)
             .decompress()

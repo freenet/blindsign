@@ -7,16 +7,15 @@
 
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
 use rand;
-use std::convert::TryFrom;
-use Error::WiredScalarMalformed;
+use Error::ScalarAsBytesMalformed;
 
 /// For managing the signer side response to incoming requests for blind
 /// signatures. How the actual requests come in is orthogonal to this crate.
-pub struct BlindSession {
+pub struct SignerState {
     k: Scalar,
 }
 
-impl BlindSession {
+impl SignerState {
     /// Initiate a new signer side session to create a blind signature for
     /// a requester.
     ///
@@ -48,7 +47,7 @@ impl BlindSession {
     /// * 'ep' - A reference to a 32 byte scalar represented as a [u8; 32]. This
     /// scalar is received from the requester in some manner.
     ///
-    /// * 'xs' - The private key componenet of the associated BlindKeypair
+    /// * 'private_key' - The private key componenet of the associated BlindKeypair
     /// component, in internal Scalar form. This is used for creating signatures
     /// which can be authenticated with the associated public key.
     ///
@@ -65,16 +64,16 @@ impl BlindSession {
     /// * S' = Xs*e' + k
     /// * e' = requester calculated e' value, received by signer
     /// * k  = randomly generated number by the signer
-    pub fn sign_ep(self, ep: &[u8; 32], xs: Scalar) -> ::Result<[u8; 32]> {
-        println!("Debug: ep bytes: {:?}", ep);
+    pub fn sign_ep(self, ep: &[u8; 32], signing_key: Scalar) -> ::Result<[u8; 32]> {
+        debug!("Debug: ep bytes: {:?}", ep);
         let ep_scalar = Scalar::from_canonical_bytes(*ep);
         if ep_scalar.is_some().unwrap_u8() == 1 {
-            println!("Debug: Successfully converted ep to Scalar");
+            debug!("Debug: Successfully converted ep to Scalar");
         } else {
-            println!("Debug: Failed to convert ep to Scalar");
-            println!("Debug: Last byte of ep: {}", ep[31]);
-            return Err(WiredScalarMalformed);
+            debug!("Debug: Failed to convert ep to Scalar");
+            debug!("Debug: Last byte of ep: {}", ep[31]);
+            return Err(ScalarAsBytesMalformed);
         }
-        Ok((xs * ep_scalar.unwrap() + self.k).to_bytes())
+        Ok((signing_key * ep_scalar.unwrap() + self.k).to_bytes())
     }
 }
