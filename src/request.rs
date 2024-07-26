@@ -144,6 +144,8 @@ where
     // e' = e / u
     let ep = generate_ep(u, e);
 
+    println!("Debug: Generated ep: {:?}", ep.to_bytes());
+
     Ok((ep.to_bytes(), BlindRequest { u, v, r, e }))
 }
 
