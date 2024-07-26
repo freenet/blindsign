@@ -33,6 +33,16 @@ pub type Result<T> = ::std::result::Result<T, Error>;
 
 /// The Error types
 #[derive(Fail, Debug)]
+use log::LevelFilter;
+
+/// Initialize the logger for the blindsign library.
+/// This function should be called at the start of the main program using this library.
+pub fn init_logger() {
+    env_logger::Builder::new()
+        .filter_level(LevelFilter::Debug)
+        .init();
+}
+
 pub enum Error {
     #[fail(display = "failed to initialize the RNG")]
     RngInitFailed,

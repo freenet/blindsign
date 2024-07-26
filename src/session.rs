@@ -8,6 +8,7 @@
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
 use rand;
 use std::convert::TryFrom;
+use log::{debug, error};
 use Error::WiredScalarMalformed;
 
 /// For managing the signer side response to incoming requests for blind
@@ -66,13 +67,13 @@ impl BlindSession {
     /// * e' = requester calculated e' value, received by signer
     /// * k  = randomly generated number by the signer
     pub fn sign_ep(self, ep: &[u8; 32], xs: Scalar) -> ::Result<[u8; 32]> {
-        println!("Debug: ep bytes: {:?}", ep);
+        debug!("ep bytes: {:?}", ep);
         let ep_scalar = Scalar::from_canonical_bytes(*ep);
         if ep_scalar.is_some().unwrap_u8() == 1 {
-            println!("Debug: Successfully converted ep to Scalar");
+            debug!("Successfully converted ep to Scalar");
         } else {
-            println!("Debug: Failed to convert ep to Scalar");
-            println!("Debug: Last byte of ep: {}", ep[31]);
+            error!("Failed to convert ep to Scalar");
+            error!("Last byte of ep: {}", ep[31]);
             return Err(WiredScalarMalformed);
         }
         Ok((xs * ep_scalar.unwrap() + self.k).to_bytes())
