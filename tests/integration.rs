@@ -12,9 +12,10 @@ mod integration_test {
         keypair::BlindKeypair,
         request::BlindRequest,
         session::BlindSession,
-        signature::WiredUnblindedSigData,
+        signature::{WiredUnblindedSigData, UnblindedSigData},
     };
     use curve25519_dalek::scalar::Scalar;
+    use rand::rngs::OsRng;
 
     #[test]
     fn session_with_random_msg() {
@@ -103,15 +104,20 @@ mod integration_test {
         let (rp, bs) = BlindSession::new().unwrap();
         let (ep, br) = BlindRequest::new::<Sha3_512>(&rp).unwrap();
         let sp = bs.sign_ep(&ep, keypair.private()).unwrap();
-        let mut unblinded_signed_msg = br.gen_signed_msg(&sp).unwrap();
+        let unblinded_signed_msg = br.gen_signed_msg(&sp).unwrap();
 
-        // Tamper with the signature
-        unblinded_signed_msg.s = Scalar::one(); // Replace with an invalid scalar
+        // Create a new invalid signature
+        let invalid_s = Scalar::random(&mut OsRng);
+        let invalid_sig = UnblindedSigData {
+            e: unblinded_signed_msg.e,
+            s: invalid_s,
+            r: unblinded_signed_msg.r,
+        };
 
-        let wired = WiredUnblindedSigData::from(unblinded_signed_msg);
+        let wired = WiredUnblindedSigData::from(invalid_sig);
         let sig = wired.to_internal_format().unwrap();
 
-        assert!(!sig.authenticate(keypair.public()), "Tampered signature should not authenticate");
+        assert!(!sig.authenticate(keypair.public()), "Invalid signature should not authenticate");
     }
 
     #[test]
