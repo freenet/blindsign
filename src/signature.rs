@@ -117,7 +117,7 @@ impl UnblindedSigData {
         H: Digest<OutputSize = U64> + Default,
         M: AsRef<[u8]>,
     {
-        let e = client::generate_e::<H>(self.r, msg.as_ref());
+        let e = crate::client::generate_e::<H>(self.r, msg.as_ref());
         self.s * RISTRETTO_BASEPOINT_POINT == e * pub_key + self.r
     }
 
@@ -135,7 +135,7 @@ impl UnblindedSigData {
         H: Digest<OutputSize = U64> + Default,
         M: AsRef<[u8]>,
     {
-        let e = request::generate_e::<H>(self.r, msg.as_ref());
+        let e = crate::client::generate_e::<H>(self.r, msg.as_ref());
         ConstantTimeEq::ct_eq(&(self.s * RISTRETTO_BASEPOINT_POINT), &(e * pub_key + self.r))
             .unwrap_u8() == 1
     }
@@ -209,3 +209,4 @@ impl WiredUnblindedSigData {
         self.0
     }
 }
+use crate::client;
