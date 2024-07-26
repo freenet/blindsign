@@ -28,9 +28,10 @@ export class BlinderState {
     }
 
     genSignedMsg(blindedSignature) {
-        const s = new Uint8Array(32);
-        nacl.scalarMult(this.u, blindedSignature).forEach((byte, i) => s[i] = byte);
-        this.v.forEach((byte, i) => s[i] ^= byte);
+        const s = nacl.scalarMult(blindedSignature, this.u);
+        for (let i = 0; i < 32; i++) {
+            s[i] ^= this.v[i];
+        }
 
         return {
             e: this.e,
@@ -48,6 +49,6 @@ function generateE(r, message) {
 }
 
 function generateEp(u, e) {
-    const uInv = nacl.scalarMult.scalarMultBase(u);
-    return nacl.scalarMult(uInv, e);
+    const uInv = nacl.scalarMult.base(u);
+    return nacl.scalarMult(e, uInv);
 }
