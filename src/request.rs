@@ -15,7 +15,7 @@ use std::convert::TryInto;
 use signature::UnblindedSigData;
 use typenum::U64;
 use log::{debug, error};
-use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
+use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 
 /// For managing the requester steps of the blind signature protocol. Actually
 /// initiating the protocol such that the signer knows to begin the first step

@@ -5,7 +5,6 @@ use curve25519_dalek::{
     scalar::Scalar,
 };
 use rand;
-use log::{debug, error};
 use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 
 /// An elliptic curve cryptography keypair. The private key (Xs) is used by the

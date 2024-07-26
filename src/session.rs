@@ -7,9 +7,8 @@
 
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
 use rand;
-use std::convert::TryFrom;
 use log::{debug, error};
-use Error::WiredScalarMalformed;
+use crate::Error::WiredScalarMalformed;
 
 /// For managing the signer side response to incoming requests for blind
 /// signatures. How the actual requests come in is orthogonal to this crate.
