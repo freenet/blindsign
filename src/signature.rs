@@ -4,12 +4,11 @@ use curve25519_dalek::{
     ristretto::{CompressedRistretto, RistrettoPoint},
     scalar::Scalar,
 };
-use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
-extern crate subtle;
+use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 use subtle::ConstantTimeEq;
 use typenum::U64;
 use digest::Digest;
-use request;
+use crate::request;
 
 /// The data required for authenticating the unblinded signature,
 ///

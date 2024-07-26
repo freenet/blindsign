@@ -22,6 +22,9 @@ pub mod signature;
 /// The Result type used
 pub type Result<T> = std::result::Result<T, Error>;
 
+// Re-export Error and Result for use in other modules
+pub use self::Error;
+
 /// Initialize the logger for the blindsign library.
 /// This function should be called at the start of the main program using this library.
 pub fn init_logger() {
