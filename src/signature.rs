@@ -5,7 +5,6 @@ use curve25519_dalek::{
     scalar::Scalar,
 };
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
-extern crate subtle;
 use subtle::{ConstantTimeEq, Choice, CtOption};
 use typenum::U64;
 use digest::Digest;
