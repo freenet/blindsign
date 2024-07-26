@@ -14,6 +14,7 @@ use digest::Digest;
 use rand::rngs::OsRng;
 use rand::RngCore;
 use std::convert::TryInto;
+use std::convert::From;
 use signature::UnblindedSigData;
 use typenum::U64;
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
@@ -69,7 +70,7 @@ impl BlindRequest {
     where
         H: Digest<OutputSize = U64> + Default,
     {
-        initiate::<H, &[u8; 32]>(rp, &Scalar::from_bytes_mod_order(OsRng.next_u64().to_le_bytes().into()).to_bytes())
+        initiate::<H, &[u8; 32]>(rp, &Scalar::from_bytes_mod_order(<[u8; 32]>::from(OsRng.next_u64().to_le_bytes())).to_bytes())
     }
 
     /// The same as new, but allows for passing in a specific message value 'm'
@@ -133,8 +134,8 @@ where
         .ok_or(WiredRistrettoPointMalformed)?;
 
     // The random scalars u and v must be generated
-    let u = Scalar::from_bytes_mod_order(rng.next_u64().to_le_bytes());
-    let v = Scalar::from_bytes_mod_order(rng.next_u64().to_le_bytes());
+    let u = Scalar::from_bytes_mod_order(<[u8; 32]>::from(rng.next_u64().to_le_bytes()));
+    let v = Scalar::from_bytes_mod_order(<[u8; 32]>::from(rng.next_u64().to_le_bytes()));
 
     // R = u*R' + v*P
     let r = generate_r(u, v, rp);

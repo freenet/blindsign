@@ -16,6 +16,7 @@ extern crate digest;
 extern crate failure;
 extern crate rand;
 extern crate typenum;
+extern crate subtle;
 use subtle::{ConstantTimeEq, Choice};
 
 // Imported crates with used macros
