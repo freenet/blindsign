@@ -4,8 +4,7 @@ use curve25519_dalek::{
     ristretto::{CompressedRistretto, RistrettoPoint},
     scalar::Scalar,
 };
-use rand;
-use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
+use crate::Error;
 
 /// An elliptic curve cryptography keypair. The private key (Xs) is used by the
 /// signer for creating the blind signature on the blinded hash(msg||R), and the

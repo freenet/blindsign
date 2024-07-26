@@ -6,9 +6,8 @@
 //! is neither defined nor implemented by this crate.
 
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
-use rand;
 use log::{debug, error};
-use crate::Error::WiredScalarMalformed;
+use crate::Error;
 
 /// For managing the signer side response to incoming requests for blind
 /// signatures. How the actual requests come in is orthogonal to this crate.

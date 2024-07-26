@@ -12,10 +12,10 @@ use curve25519_dalek::{
 };
 use digest::Digest;
 use std::convert::TryInto;
-use signature::UnblindedSigData;
+use crate::signature::UnblindedSigData;
 use typenum::U64;
 use log::{debug, error};
-use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
+use crate::Error;
 
 /// For managing the requester steps of the blind signature protocol. Actually
 /// initiating the protocol such that the signer knows to begin the first step

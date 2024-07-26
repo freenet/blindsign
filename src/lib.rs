@@ -10,19 +10,8 @@
 //! This is a sans-IO implementation, meaning that no network IO for requesting
 //! or granting the initiation of the protocol is provided by this crate.
 
-// Regular imported crates
-extern crate curve25519_dalek;
-extern crate digest;
-extern crate failure;
-extern crate rand;
-extern crate typenum;
-extern crate subtle;
-
-// Imported crates with used macros
-#[macro_use]
-extern crate failure_derive;
-extern crate log;
-extern crate env_logger;
+use log::LevelFilter;
+use thiserror::Error;
 
 // The public interface
 pub mod keypair;
@@ -30,10 +19,8 @@ pub mod request;
 pub mod session;
 pub mod signature;
 
-use log::LevelFilter;
-
 /// The Result type used
-pub type Result<T> = ::std::result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 /// Initialize the logger for the blindsign library.
 /// This function should be called at the start of the main program using this library.
@@ -44,13 +31,13 @@ pub fn init_logger() {
 }
 
 /// The Error types
-#[derive(Fail, Debug)]
+#[derive(Error, Debug)]
 pub enum Error {
-    #[fail(display = "failed to initialize the RNG")]
+    #[error("failed to initialize the RNG")]
     RngInitFailed,
-    #[fail(display = "failed to convert wired scalar to scalar")]
+    #[error("failed to convert wired scalar to scalar")]
     WiredScalarMalformed,
-    #[fail(display = "failed to convert wired ristretto point to ristretto point")]
+    #[error("failed to convert wired ristretto point to ristretto point")]
     WiredRistrettoPointMalformed,
 }
 
