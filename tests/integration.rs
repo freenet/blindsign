@@ -10,8 +10,8 @@ mod integration_test {
 
     use blindsign::{
         keypair::BlindKeypair,
-        request::BlindRequest,
-        session::BlindSession,
+        client::BlindClient,
+        signer::BlindSigner,
         signature::WiredUnblindedSigData,
     };
 
