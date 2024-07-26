@@ -17,7 +17,6 @@ extern crate failure;
 extern crate rand;
 extern crate typenum;
 use subtle::{ConstantTimeEq, Choice};
-use std::convert::TryInto;
 
 // Imported crates with used macros
 #[macro_use]
