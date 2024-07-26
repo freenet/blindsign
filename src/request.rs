@@ -69,7 +69,8 @@ impl BlindRequest {
     where
         H: Digest<OutputSize = U64> + Default,
     {
-        initiate::<H, &[u8; 32]>(rp, &Scalar::from_bytes_mod_order(<[u8; 32]>::try_from([OsRng.next_u64().to_le_bytes().to_vec(), vec![0; 24]].concat()).unwrap()).to_bytes())
+        let random_message: [u8; 32] = rand::random();
+        initiate::<H, &[u8; 32]>(rp, &random_message)
     }
 
     /// The same as new, but allows for passing in a specific message value 'm'
@@ -145,8 +146,8 @@ where
         .ok_or(WiredRistrettoPointMalformed)?;
 
     // The random scalars u and v must be generated
-    let u = Scalar::from_bytes_mod_order(<[u8; 32]>::try_from([rng.next_u64().to_le_bytes().to_vec(), vec![0; 24]].concat()).unwrap());
-    let v = Scalar::from_bytes_mod_order(<[u8; 32]>::try_from([rng.next_u64().to_le_bytes().to_vec(), vec![0; 24]].concat()).unwrap());
+    let u = Scalar::from_bytes_mod_order(rand::random());
+    let v = Scalar::from_bytes_mod_order(rand::random());
 
     // R = u*R' + v*P
     let r = generate_r(u, v, rp);
@@ -183,7 +184,7 @@ where
     let mut hasher = H::default();
     hasher.update(r.compress().as_bytes());
     hasher.update(m);
-    Scalar::from_bytes_mod_order(hasher.finalize().as_slice()[..32].try_into().expect("Slice with incorrect length"))
+    Scalar::from_bytes_mod_order(hasher.finalize()[..32].try_into().unwrap())
 }
 
 /// The requester calculates e' = e / u, where
