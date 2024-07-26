@@ -5,6 +5,7 @@ use curve25519_dalek::{
     scalar::Scalar,
 };
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
+extern crate subtle;
 use subtle::{ConstantTimeEq, Choice, CtOption};
 use typenum::U64;
 use digest::Digest;
@@ -100,8 +101,7 @@ impl UnblindedSigData {
 
     /// The same as authenticate but with a constant time comparison.
     pub fn const_authenticate(&self, pub_key: RistrettoPoint) -> bool {
-        (self.s * RISTRETTO_BASEPOINT_POINT)
-            .ct_eq( &(self.e * pub_key + self.r) )
+        ConstantTimeEq::ct_eq(&(self.s * RISTRETTO_BASEPOINT_POINT), &(self.e * pub_key + self.r))
             .unwrap_u8() == 1
     }
 
@@ -138,8 +138,7 @@ impl UnblindedSigData {
         M: AsRef<[u8]>,
     {
         let e = request::generate_e::<H>(self.r, msg.as_ref());
-        (self.s * RISTRETTO_BASEPOINT_POINT)
-            .ct_eq( &(e * pub_key + self.r) )
+        ConstantTimeEq::ct_eq(&(self.s * RISTRETTO_BASEPOINT_POINT), &(e * pub_key + self.r))
             .unwrap_u8() == 1
     }
 }

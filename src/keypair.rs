@@ -39,7 +39,7 @@ impl BlindKeypair {
     /// * P = The ECC generator point
     pub fn generate() -> ::Result<Self> {
         let mut rng = OsRng;
-        let private = Scalar::from_bytes_mod_order(<[u8; 32]>::from(rng.next_u64().to_le_bytes()));
+        let private = Scalar::from_bytes_mod_order(<[u8; 32]>::from([rng.next_u64().to_le_bytes(), [0; 24]].concat()));
         let public = private * RISTRETTO_BASEPOINT_POINT;
         Ok(BlindKeypair { private, public })
     }
