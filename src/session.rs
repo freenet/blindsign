@@ -7,7 +7,8 @@
 
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
 use log::{debug, error};
-use crate::Error;
+use crate::Error::WiredScalarMalformed;
+use crate::Result;
 
 /// For managing the signer side response to incoming requests for blind
 /// signatures. How the actual requests come in is orthogonal to this crate.
@@ -34,7 +35,7 @@ impl BlindSession {
     /// * R' = kP
     /// * k = A randomly generated scalar by the signer
     /// * P = An ECC Generator Point
-    pub fn new() -> ::Result<([u8; 32], Self)> {
+    pub fn new() -> Result<([u8; 32], Self)> {
         let k = Scalar::from_bytes_mod_order(rand::random());
         let rp = (k * RISTRETTO_BASEPOINT_POINT).compress().to_bytes();
         Ok((rp, Self { k }))
@@ -64,7 +65,7 @@ impl BlindSession {
     /// * S' = Xs*e' + k
     /// * e' = requester calculated e' value, received by signer
     /// * k  = randomly generated number by the signer
-    pub fn sign_ep(self, ep: &[u8; 32], xs: Scalar) -> ::Result<[u8; 32]> {
+    pub fn sign_ep(self, ep: &[u8; 32], xs: Scalar) -> Result<[u8; 32]> {
         debug!("ep bytes: {:?}", ep);
         let ep_scalar = Scalar::from_canonical_bytes(*ep);
         if ep_scalar.is_some().unwrap_u8() == 1 {
