@@ -1,7 +1,7 @@
 //! Signer side of the blind signature protocol
 
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
-use log::debug;
+use log::{debug, error};
 use crate::Error::WiredScalarMalformed;
 use crate::Result;
 
