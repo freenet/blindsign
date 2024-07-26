@@ -6,8 +6,7 @@
 //! is neither defined nor implemented by this crate.
 
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
-use rand::rngs::OsRng;
-use rand::RngCore;
+use rand;
 use std::convert::TryFrom;
 use Error::WiredScalarMalformed;
 
@@ -37,8 +36,7 @@ impl BlindSession {
     /// * k = A randomly generated scalar by the signer
     /// * P = An ECC Generator Point
     pub fn new() -> ::Result<([u8; 32], Self)> {
-        let mut rng = OsRng;
-        let k = Scalar::from_bytes_mod_order(<[u8; 32]>::try_from([rng.next_u64().to_le_bytes().to_vec(), vec![0; 24]].concat()).unwrap());
+        let k = Scalar::from_bytes_mod_order(rand::random());
         let rp = (k * RISTRETTO_BASEPOINT_POINT).compress().to_bytes();
         Ok((rp, Self { k }))
     }
