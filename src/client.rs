@@ -9,7 +9,7 @@ use digest::Digest;
 use std::convert::TryInto;
 use crate::signature::UnblindedSigData;
 use typenum::U64;
-use log::{debug, error};
+use log::debug;
 use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 use crate::Result;
 
@@ -70,7 +70,7 @@ impl BlindClient {
     /// * `Err(Error)` - If there's an error in the process.
     pub fn finalize(self, sp: &[u8; 32]) -> Result<UnblindedSigData> {
         debug!("sp bytes: {:?}", sp);
-        let sp_scalar = Scalar::from_canonical_bytes(*sp).ok_or(WiredScalarMalformed)?;
+        let sp_scalar = Scalar::from_canonical_bytes(*sp).ok_or_else(|| WiredScalarMalformed)?;
         
         debug!("Successfully converted sp to Scalar");
         debug!("u: {:?}", self.u.to_bytes());

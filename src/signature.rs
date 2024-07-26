@@ -8,7 +8,7 @@ use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 use subtle::ConstantTimeEq;
 use typenum::U64;
 use digest::Digest;
-use crate::request;
+use crate::client;
 
 /// The data required for authenticating the unblinded signature,
 ///
