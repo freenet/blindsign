@@ -14,6 +14,7 @@ mod integration_test {
         session::BlindSession,
         signature::WiredUnblindedSigData,
     };
+    use curve25519_dalek::scalar::Scalar;
 
     #[test]
     fn session_with_random_msg() {
@@ -81,5 +82,49 @@ mod integration_test {
 
         // A demonstration of authenticating the blind signature
         assert!(sig.authenticate(keypair.public()));
+    }
+
+    #[test]
+    fn test_valid_signature() {
+        let keypair = BlindKeypair::generate().unwrap();
+        let (rp, bs) = BlindSession::new().unwrap();
+        let (ep, br) = BlindRequest::new::<Sha3_512>(&rp).unwrap();
+        let sp = bs.sign_ep(&ep, keypair.private()).unwrap();
+        let unblinded_signed_msg = br.gen_signed_msg(&sp).unwrap();
+        let wired = WiredUnblindedSigData::from(unblinded_signed_msg);
+        let sig = wired.to_internal_format().unwrap();
+
+        assert!(sig.authenticate(keypair.public()), "Valid signature should authenticate successfully");
+    }
+
+    #[test]
+    fn test_invalid_signature() {
+        let keypair = BlindKeypair::generate().unwrap();
+        let (rp, bs) = BlindSession::new().unwrap();
+        let (ep, br) = BlindRequest::new::<Sha3_512>(&rp).unwrap();
+        let sp = bs.sign_ep(&ep, keypair.private()).unwrap();
+        let mut unblinded_signed_msg = br.gen_signed_msg(&sp).unwrap();
+
+        // Tamper with the signature
+        unblinded_signed_msg.s = Scalar::one(); // Replace with an invalid scalar
+
+        let wired = WiredUnblindedSigData::from(unblinded_signed_msg);
+        let sig = wired.to_internal_format().unwrap();
+
+        assert!(!sig.authenticate(keypair.public()), "Tampered signature should not authenticate");
+    }
+
+    #[test]
+    fn test_wrong_public_key() {
+        let keypair1 = BlindKeypair::generate().unwrap();
+        let keypair2 = BlindKeypair::generate().unwrap();
+        let (rp, bs) = BlindSession::new().unwrap();
+        let (ep, br) = BlindRequest::new::<Sha3_512>(&rp).unwrap();
+        let sp = bs.sign_ep(&ep, keypair1.private()).unwrap();
+        let unblinded_signed_msg = br.gen_signed_msg(&sp).unwrap();
+        let wired = WiredUnblindedSigData::from(unblinded_signed_msg);
+        let sig = wired.to_internal_format().unwrap();
+
+        assert!(!sig.authenticate(keypair2.public()), "Signature should not authenticate with wrong public key");
     }
 }
