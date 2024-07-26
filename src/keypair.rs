@@ -4,8 +4,7 @@ use curve25519_dalek::{
     ristretto::{CompressedRistretto, RistrettoPoint},
     scalar::Scalar,
 };
-use rand::rngs::OsRng;
-use rand::RngCore;
+use rand;
 use std::convert::TryFrom;
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 
@@ -39,8 +38,7 @@ impl BlindKeypair {
     /// * Qs = Xs * P
     /// * P = The ECC generator point
     pub fn generate() -> ::Result<Self> {
-        let mut rng = OsRng;
-        let private = Scalar::from_bytes_mod_order(<[u8; 32]>::try_from([rng.next_u64().to_le_bytes().to_vec(), vec![0; 24]].concat()).unwrap());
+        let private = Scalar::from_bytes_mod_order(rand::random());
         let public = private * RISTRETTO_BASEPOINT_POINT;
         Ok(BlindKeypair { private, public })
     }
