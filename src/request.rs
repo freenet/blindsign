@@ -177,5 +177,6 @@ where
 /// * e = the previously generated e value
 /// * u = a randomly chosen number by the requester
 fn generate_ep(u: Scalar, e: Scalar) -> Scalar {
-    u.invert() * e
+    let ep = u.invert() * e;
+    ep.reduce()
 }
