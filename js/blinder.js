@@ -1,7 +1,7 @@
-const nacl = require('tweetnacl');
-const blake2b = require('blake2b');
+import nacl from 'tweetnacl';
+import blake2b from 'blake2b';
 
-class BlinderState {
+export class BlinderState {
     constructor(u, v, r, e) {
         this.u = u;
         this.v = v;
@@ -51,5 +51,3 @@ function generateEp(u, e) {
     const uInv = nacl.scalarMult.scalarMultBase(u);
     return nacl.scalarMult(uInv, e);
 }
-
-module.exports = BlinderState;

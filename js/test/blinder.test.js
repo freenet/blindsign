@@ -1,5 +1,5 @@
-const BlinderState = require('../blinder');
-const nacl = require('tweetnacl');
+import { BlinderState } from '../blinder.js';
+import nacl from 'tweetnacl';
 
 describe('BlinderState', () => {
     test('new() creates a valid BlinderState', () => {
