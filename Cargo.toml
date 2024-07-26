@@ -21,5 +21,3 @@ typenum = "1.10.0"
 curve25519-dalek = "4.1.3"
 subtle = { version = "2.5", features = ["std"] }
 log = "0.4.22"
-[dependencies]
-log = "0.4.22"

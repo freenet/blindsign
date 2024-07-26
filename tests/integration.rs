@@ -10,8 +10,8 @@ mod integration_test {
 
     use blindsign::{
         keypair::BlindKeypair,
-        request::BlindRequest,
-        session::BlindSession,
+        blinder::BlinderState,
+        signer::SignerState,
         signature::WiredUnblindedSigData,
     };
 
@@ -20,11 +20,11 @@ mod integration_test {
 
         // Initiates a new blind session (bs) on the signer side, the first step of
         // which is generating of the value R' (rp).
-        let (rp, bs) = BlindSession::new().unwrap();
+        let (rp, bs) = SignerState::new().unwrap();
 
         // Initiates a new blind request on the requester side, which is input R' and
         // generates e' (ep). In this case, using a specific message.
-        let (ep, br) = BlindRequest::new::<Sha3_512, &str>(&rp, "specific").unwrap();
+        let (ep, br) = BlinderState::new::<Sha3_512, &str>(&rp, "specific").unwrap();
 
         // Generates a new keypair. The private key is used for creating blind
         // signatures on the blinded message, and the public key is used for
@@ -53,8 +53,8 @@ mod integration_test {
     #[test]
     fn test_valid_signature() {
         let keypair = BlindKeypair::generate().unwrap();
-        let (rp, bs) = BlindSession::new().unwrap();
-        let (ep, br) = BlindRequest::new::<Sha3_512, &[u8]>(&rp, &[0u8; 32]).unwrap();
+        let (rp, bs) = SignerState::new().unwrap();
+        let (ep, br) = BlinderState::new::<Sha3_512, &[u8]>(&rp, &[0u8; 32]).unwrap();
         let sp = bs.sign_ep(&ep, keypair.private()).unwrap();
         let unblinded_signed_msg = br.gen_signed_msg(&sp).unwrap();
         let wired = WiredUnblindedSigData::from(unblinded_signed_msg);
@@ -66,8 +66,8 @@ mod integration_test {
     #[test]
     fn test_invalid_signature() {
         let keypair = BlindKeypair::generate().unwrap();
-        let (rp, bs) = BlindSession::new().unwrap();
-        let (ep, br) = BlindRequest::new::<Sha3_512, &[u8]>(&rp, &[0u8; 32]).unwrap();
+        let (rp, bs) = SignerState::new().unwrap();
+        let (ep, br) = BlinderState::new::<Sha3_512, &[u8]>(&rp, &[0u8; 32]).unwrap();
         let sp = bs.sign_ep(&ep, keypair.private()).unwrap();
         let unblinded_signed_msg = br.gen_signed_msg(&sp).unwrap();
 
@@ -84,8 +84,8 @@ mod integration_test {
     fn test_wrong_public_key() {
         let keypair1 = BlindKeypair::generate().unwrap();
         let keypair2 = BlindKeypair::generate().unwrap();
-        let (rp, bs) = BlindSession::new().unwrap();
-        let (ep, br) = BlindRequest::new::<Sha3_512, &[u8]>(&rp, &[0u8; 32]).unwrap();
+        let (rp, bs) = SignerState::new().unwrap();
+        let (ep, br) = BlinderState::new::<Sha3_512, &[u8]>(&rp, &[0u8; 32]).unwrap();
         let sp = bs.sign_ep(&ep, keypair1.private()).unwrap();
         let unblinded_signed_msg = br.gen_signed_msg(&sp).unwrap();
         let wired = WiredUnblindedSigData::from(unblinded_signed_msg);

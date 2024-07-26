@@ -1,0 +1,19 @@
+{
+  "name": "blindsign-js",
+  "version": "1.0.0",
+  "description": "JavaScript implementation of Elliptic Curve blind signature algorithm",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": ["blind signature", "elliptic curve", "cryptography"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tweetnacl": "^1.0.3",
+    "blake2b": "^2.1.4"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6"
+  }
+}
