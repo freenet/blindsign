@@ -36,8 +36,10 @@ impl BlindSigner {
     /// * `Err(Error)` - If there's an error in the process.
     pub fn sign(self, ep: &[u8; 32], xs: Scalar) -> Result<[u8; 32]> {
         debug!("ep bytes: {:?}", ep);
-        let ep_scalar = Scalar::from_canonical_bytes(*ep)
-            .ok_or(WiredScalarMalformed)?;
+        let ep_scalar = match Scalar::from_canonical_bytes(*ep) {
+            Some(scalar) => scalar,
+            None => return Err(WiredScalarMalformed),
+        };
         
         debug!("Successfully converted ep to Scalar");
         Ok((xs * ep_scalar + self.k).to_bytes())
