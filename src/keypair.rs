@@ -6,6 +6,7 @@ use curve25519_dalek::{
 };
 use rand::rngs::OsRng;
 use rand::RngCore;
+use std::convert::TryInto;
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 
 /// An elliptic curve cryptography keypair. The private key (Xs) is used by the
