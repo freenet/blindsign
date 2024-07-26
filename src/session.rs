@@ -8,6 +8,7 @@
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
 use rand::rngs::OsRng;
 use rand::RngCore;
+use std::convert::TryFrom;
 use Error::WiredScalarMalformed;
 
 /// For managing the signer side response to incoming requests for blind
@@ -37,7 +38,7 @@ impl BlindSession {
     /// * P = An ECC Generator Point
     pub fn new() -> ::Result<([u8; 32], Self)> {
         let mut rng = OsRng;
-        let k = Scalar::from_bytes_mod_order(<[u8; 32]>::from([rng.next_u64().to_le_bytes().to_vec(), vec![0; 24]].concat().try_into().unwrap()));
+        let k = Scalar::from_bytes_mod_order(<[u8; 32]>::try_from([rng.next_u64().to_le_bytes().to_vec(), vec![0; 24]].concat()).unwrap());
         let rp = (k * RISTRETTO_BASEPOINT_POINT).compress().to_bytes();
         Ok((rp, Self { k }))
     }

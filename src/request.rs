@@ -14,7 +14,6 @@ use digest::Digest;
 use rand::rngs::OsRng;
 use rand::RngCore;
 use std::convert::{TryInto, TryFrom};
-use std::convert::From;
 use signature::UnblindedSigData;
 use typenum::U64;
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
