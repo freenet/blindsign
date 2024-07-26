@@ -4,10 +4,12 @@ use curve25519_dalek::{
     ristretto::{CompressedRistretto, RistrettoPoint},
     scalar::Scalar,
 };
-use crate::Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
+use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
+extern crate subtle;
 use subtle::ConstantTimeEq;
 use typenum::U64;
 use digest::Digest;
+use request;
 
 /// The data required for authenticating the unblinded signature,
 ///
@@ -117,7 +119,7 @@ impl UnblindedSigData {
         H: Digest<OutputSize = U64> + Default,
         M: AsRef<[u8]>,
     {
-        let e = crate::client::generate_e::<H>(self.r, msg.as_ref());
+        let e = request::generate_e::<H>(self.r, msg.as_ref());
         self.s * RISTRETTO_BASEPOINT_POINT == e * pub_key + self.r
     }
 
@@ -135,7 +137,7 @@ impl UnblindedSigData {
         H: Digest<OutputSize = U64> + Default,
         M: AsRef<[u8]>,
     {
-        let e = crate::client::generate_e::<H>(self.r, msg.as_ref());
+        let e = request::generate_e::<H>(self.r, msg.as_ref());
         ConstantTimeEq::ct_eq(&(self.s * RISTRETTO_BASEPOINT_POINT), &(e * pub_key + self.r))
             .unwrap_u8() == 1
     }
@@ -167,7 +169,7 @@ impl WiredUnblindedSigData {
     ///
     /// * Err(::Error) on failure, which could be due to any component of the
     /// internal [u8; 96] being malformed.
-    pub fn to_internal_format(&self) -> crate::Result<UnblindedSigData> {
+    pub fn to_internal_format(&self) -> ::Result<UnblindedSigData> {
         let mut e_arr = [0; 32];
         let mut s_arr = [0; 32];
         let mut r_arr = [0; 32];
@@ -209,4 +211,3 @@ impl WiredUnblindedSigData {
         self.0
     }
 }
-use crate::client;
