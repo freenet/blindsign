@@ -6,7 +6,7 @@
 //! is neither defined nor implemented by this crate.
 
 use curve25519_dalek::{constants::RISTRETTO_BASEPOINT_POINT, scalar::Scalar};
-use rand::OsRng;
+use rand::rngs::OsRng;
 use Error::WiredScalarMalformed;
 
 /// For managing the signer side response to incoming requests for blind
@@ -36,7 +36,7 @@ impl BlindSession {
     /// * P = An ECC Generator Point
     pub fn new() -> ::Result<([u8; 32], Self)> {
         let mut rng = OsRng::new()?;
-        let k = Scalar::random(&mut rng);
+        let k = Scalar::from_bytes_mod_order(rng.next_u64().to_le_bytes());
         let rp = (k * RISTRETTO_BASEPOINT_POINT).compress().to_bytes();
         Ok((rp, Self { k }))
     }
@@ -67,7 +67,7 @@ impl BlindSession {
     /// * k  = randomly generated number by the signer
     pub fn sign_ep(self, ep: &[u8; 32], xs: Scalar) -> ::Result<[u8; 32]> {
         Ok(
-            (xs * Scalar::from_canonical_bytes(*ep).ok_or(WiredScalarMalformed)? + self.k)
+            (xs * Scalar::from_canonical_bytes(*ep).unwrap_or_else(|| panic!("{}", WiredScalarMalformed)) + self.k)
                 .to_bytes(),
         )
     }

@@ -5,7 +5,7 @@ use curve25519_dalek::{
     scalar::Scalar,
 };
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
-use subtle::ConstantTimeEq;
+use subtle::{ConstantTimeEq, Choice};
 use typenum::U64;
 use digest::Digest;
 use request;
@@ -178,8 +178,8 @@ impl WiredUnblindedSigData {
         s_arr.copy_from_slice(&self.0[32..64]);
         r_arr.copy_from_slice(&self.0[64..96]);
         Ok(UnblindedSigData {
-            e: Scalar::from_canonical_bytes(e_arr).ok_or(WiredScalarMalformed)?,
-            s: Scalar::from_canonical_bytes(s_arr).ok_or(WiredScalarMalformed)?,
+            e: Scalar::from_canonical_bytes(e_arr).unwrap_or_else(|| panic!("{}", WiredScalarMalformed)),
+            s: Scalar::from_canonical_bytes(s_arr).unwrap_or_else(|| panic!("{}", WiredScalarMalformed)),
             r: CompressedRistretto(r_arr)
                 .decompress()
                 .ok_or(WiredRistrettoPointMalformed)?,

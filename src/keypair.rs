@@ -4,7 +4,7 @@ use curve25519_dalek::{
     ristretto::{CompressedRistretto, RistrettoPoint},
     scalar::Scalar,
 };
-use rand::OsRng;
+use rand::rngs::OsRng;
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 
 /// An elliptic curve cryptography keypair. The private key (Xs) is used by the
@@ -38,7 +38,7 @@ impl BlindKeypair {
     /// * P = The ECC generator point
     pub fn generate() -> ::Result<Self> {
         let mut rng = OsRng::new()?;
-        let private = Scalar::random(&mut rng);
+        let private = Scalar::from_bytes_mod_order(rng.next_u64().to_le_bytes());
         let public = private * RISTRETTO_BASEPOINT_POINT;
         Ok(BlindKeypair { private, public })
     }
@@ -54,7 +54,7 @@ impl BlindKeypair {
     /// or public key inputs were malformed.
     pub fn from_wired(private: [u8; 32], public: [u8; 32]) -> ::Result<Self> {
         Ok(BlindKeypair {
-            private: Scalar::from_canonical_bytes(private).ok_or(WiredScalarMalformed)?,
+            private: Scalar::from_canonical_bytes(private).unwrap_or_else(|| panic!("{}", WiredScalarMalformed)),
             public: CompressedRistretto(public)
                 .decompress()
                 .ok_or(WiredRistrettoPointMalformed)?,
