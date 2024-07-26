@@ -12,8 +12,7 @@ use curve25519_dalek::{
 };
 use digest::Digest;
 use rand::rngs::OsRng;
-use rand::RngCore;
-use std::convert::{TryInto, TryFrom};
+use std::convert::TryInto;
 use signature::UnblindedSigData;
 use typenum::U64;
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
@@ -138,7 +137,6 @@ where
     H: Digest<OutputSize = U64> + Default,
     M: AsRef<[u8]>,
 {
-    let mut rng = OsRng;
     // Load the wired R' value into RistrettoPoint form, error if the wired
     // form was malformed.
     let rp = CompressedRistretto(*rp)

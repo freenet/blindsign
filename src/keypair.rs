@@ -5,7 +5,6 @@ use curve25519_dalek::{
     scalar::Scalar,
 };
 use rand;
-use std::convert::TryFrom;
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
 
 /// An elliptic curve cryptography keypair. The private key (Xs) is used by the
@@ -53,7 +52,7 @@ impl BlindKeypair {
     /// * Err(::Error) on failure, which can indicate either that the private
     /// or public key inputs were malformed.
     pub fn from_wired(private: [u8; 32], public: [u8; 32]) -> ::Result<Self> {
-        let private = Scalar::from_canonical_bytes(private).ok_or(WiredScalarMalformed)?;
+        let private = Scalar::from_canonical_bytes(private).ok_or_else(|| WiredScalarMalformed)?;
         let public = CompressedRistretto(public).decompress().ok_or(WiredRistrettoPointMalformed)?;
         Ok(BlindKeypair { private, public })
     }
