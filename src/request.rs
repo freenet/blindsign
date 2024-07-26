@@ -13,6 +13,7 @@ use curve25519_dalek::{
 use digest::Digest;
 use rand::rngs::OsRng;
 use rand::RngCore;
+use std::convert::TryInto;
 use signature::UnblindedSigData;
 use typenum::U64;
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
@@ -68,7 +69,7 @@ impl BlindRequest {
     where
         H: Digest<OutputSize = U64> + Default,
     {
-        initiate::<H, &[u8; 32]>(rp, &Scalar::from_bytes_mod_order(OsRng.next_u64().to_le_bytes()).to_bytes())
+        initiate::<H, &[u8; 32]>(rp, &Scalar::from_bytes_mod_order(OsRng.next_u64().to_le_bytes().into()).to_bytes())
     }
 
     /// The same as new, but allows for passing in a specific message value 'm'
@@ -124,7 +125,7 @@ where
     H: Digest<OutputSize = U64> + Default,
     M: AsRef<[u8]>,
 {
-    let mut rng = OsRng::new()?;
+    let mut rng = OsRng;
     // Load the wired R' value into RistrettoPoint form, error if the wired
     // form was malformed.
     let rp = CompressedRistretto(*rp)
@@ -168,7 +169,7 @@ where
     let mut hasher = H::default();
     hasher.update(r.compress().as_bytes());
     hasher.update(m);
-    Scalar::from_bytes_mod_order(hasher.finalize().as_slice()[..32].try_into().unwrap())
+    Scalar::from_bytes_mod_order(hasher.finalize().as_slice()[..32].try_into().expect("Slice with incorrect length"))
 }
 
 /// The requester calculates e' = e / u, where

@@ -5,7 +5,7 @@ use curve25519_dalek::{
     scalar::Scalar,
 };
 use Error::{WiredRistrettoPointMalformed, WiredScalarMalformed};
-use subtle::{ConstantTimeEq, Choice};
+use subtle::{ConstantTimeEq, Choice, CtOption};
 use typenum::U64;
 use digest::Digest;
 use request;

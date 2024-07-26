@@ -35,7 +35,7 @@ impl BlindSession {
     /// * k = A randomly generated scalar by the signer
     /// * P = An ECC Generator Point
     pub fn new() -> ::Result<([u8; 32], Self)> {
-        let mut rng = OsRng::new()?;
+        let mut rng = OsRng;
         let k = Scalar::from_bytes_mod_order(rng.next_u64().to_le_bytes());
         let rp = (k * RISTRETTO_BASEPOINT_POINT).compress().to_bytes();
         Ok((rp, Self { k }))
